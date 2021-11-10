@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: URx robot controller API docs
+  title: URx robot controller API docs - test
   description: API for the URx robot controller
   contact:
     email: danai.vachtsevanou@unisg.ch
