@@ -11,8 +11,6 @@ info:
 servers:
 - url: https://virtserver.swaggerhub.com/danaivach/robot-controller/1.0.0
   description: SwaggerHub API Auto Mocking
-- url: https://virtserver.swaggerhub.com/intelliot/robot-controller/1.0.0
-  description: SwaggerHub API Auto Mocking
 tags:
 - name: operator
   description: The operator of the robot controller.
@@ -58,12 +56,12 @@ paths:
           description: Operator set successfully.
           headers:
             Location:
-              description: "The location of the current operator, e.g. virtserver.swaggerhub.com/intelliot/robot/0.0.0/operator/6dc1e80c14edf749e2ceb86d98ea1ca1."
+              description: "The location of the current operator, e.g. virtserver.swaggerhub.com/danaivach/robot/0.0.0/operator/6dc1e80c14edf749e2ceb86d98ea1ca1."
               style: simple
               explode: false
               schema:
                 type: string
-              example: virtserver.swaggerhub.com/intelliot/robot/0.0.0/operator/6dc1e80c14edf749e2ceb86d98ea1ca1
+              example: virtserver.swaggerhub.com/danaivach/robot/0.0.0/operator/6dc1e80c14edf749e2ceb86d98ea1ca1
         "400":
           description: Bad input parameter.
         "403":
