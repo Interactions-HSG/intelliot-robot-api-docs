@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: URx robot controller API docs
-  description: API for the URx robot controller
+  description: API for the URx robot controller used in the IntellIoT project.
   contact:
     email: danai.vachtsevanou@unisg.ch
   license:
@@ -10,6 +10,8 @@ info:
   version: 1.0.0
 servers:
 - url: https://virtserver.swaggerhub.com/danaivach/robot-controller/1.0.0
+  description: SwaggerHub API Auto Mocking
+- url: https://virtserver.swaggerhub.com/intelliot/robot-controller/1.0.0
   description: SwaggerHub API Auto Mocking
 tags:
 - name: operator
@@ -56,12 +58,12 @@ paths:
           description: Operator set successfully.
           headers:
             Location:
-              description: "The location of the current operator, e.g. virtserver.swaggerhub.com/danaivach/robot/0.0.0/operator/6dc1e80c14edf749e2ceb86d98ea1ca1."
+              description: "The location of the current operator, e.g. virtserver.swaggerhub.com/intelliot/robot/0.0.0/operator/6dc1e80c14edf749e2ceb86d98ea1ca1."
               style: simple
               explode: false
               schema:
                 type: string
-              example: virtserver.swaggerhub.com/danaivach/robot/0.0.0/operator/6dc1e80c14edf749e2ceb86d98ea1ca1
+              example: virtserver.swaggerhub.com/intelliot/robot/0.0.0/operator/6dc1e80c14edf749e2ceb86d98ea1ca1
         "400":
           description: Bad input parameter.
         "403":
@@ -84,13 +86,11 @@ paths:
         example: 6dc1e80c14edf749e2ceb86d98ea1ca1
       - name: X-API-KEY
         in: header
-        description: The operator token.
         required: true
         style: simple
         explode: false
         schema:
-          type: string
-        example: 6dc1e80c14edf749e2ceb86d98ea1ca1
+          $ref: '#/components/schemas/Security'
       responses:
         "200":
           description: Operator successfully removed.
@@ -99,6 +99,30 @@ paths:
         "401":
           description: Unauthorized.
   /viewpoint:
+    get:
+      tags:
+      - viewpoint
+      summary: Reads the viewpoint.
+      description: Reads the target or current viewpoint of the robot.
+      parameters:
+      - name: X-API-KEY
+        in: header
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/Security'
+      responses:
+        "200":
+          description: Viewpoint read successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Viewpoint'
+        "400":
+          description: Bad input parameter.
+        "401":
+          description: Unauthorized.
     put:
       tags:
       - viewpoint
@@ -107,13 +131,11 @@ paths:
       parameters:
       - name: X-API-KEY
         in: header
-        description: The operator token.
         required: true
         style: simple
         explode: false
         schema:
-          type: string
-        example: 6dc1e80c14edf749e2ceb86d98ea1ca1
+          $ref: '#/components/schemas/Security'
       requestBody:
         description: The target viewpoint.
         content:
@@ -144,6 +166,33 @@ paths:
                 "400":
                   description: Invalid input parameter.
   /grabspot:
+    get:
+      tags:
+      - grabspot
+      summary: Reads the grabspot.
+      description: Reads the target or current grabspot of the robot.
+      parameters:
+      - name: X-API-KEY
+        in: header
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/Security'
+      responses:
+        "200":
+          description: Grabspot read successfully.
+          content:
+            application/json+eucledian:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+            application/json+neighborhood:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_1'
+        "400":
+          description: Bad input parameter.
+        "401":
+          description: Unauthorized.
     put:
       tags:
       - grabspot
@@ -152,13 +201,11 @@ paths:
       parameters:
       - name: X-API-KEY
         in: header
-        description: The operator token.
         required: true
         style: simple
         explode: false
         schema:
-          type: string
-        example: 6dc1e80c14edf749e2ceb86d98ea1ca1
+          $ref: '#/components/schemas/Security'
       requestBody:
         description: The target position.
         content:
@@ -192,6 +239,33 @@ paths:
                 "400":
                   description: Invalid input parameter.
   /releasespot:
+    get:
+      tags:
+      - releasespot
+      summary: Reads the release-spot.
+      description: Reads the target or current release-spot of the robot.
+      parameters:
+      - name: X-API-KEY
+        in: header
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/Security'
+      responses:
+        "200":
+          description: Release-spot read successfully.
+          content:
+            application/json+eucledian:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+            application/json+neighborhood:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_1'
+        "400":
+          description: Bad input parameter.
+        "401":
+          description: Unauthorized.
     put:
       tags:
       - releasespot
@@ -200,13 +274,11 @@ paths:
       parameters:
       - name: X-API-KEY
         in: header
-        description: The operator token.
         required: true
         style: simple
         explode: false
         schema:
-          type: string
-        example: 6dc1e80c14edf749e2ceb86d98ea1ca1
+          $ref: '#/components/schemas/Security'
       requestBody:
         description: The target position.
         content:
@@ -241,6 +313,10 @@ paths:
                   description: Invalid input parameter.
 components:
   schemas:
+    Security:
+      type: string
+      description: The operator token.
+      example: 6dc1e80c14edf749e2ceb86d98ea1ca1
     Operator:
       required:
       - email
@@ -310,9 +386,22 @@ components:
       - "1"
       - engraver1
       - engraver2
+    inline_response_200:
+      required:
+      - position
+      type: object
+      properties:
+        position:
+          $ref: '#/components/schemas/Coordinates'
+    inline_response_200_1:
+      required:
+      - position
+      type: object
+      properties:
+        position:
+          $ref: '#/components/schemas/Neighbor'
     grabspot_body:
       required:
-      - callback
       - position
       type: object
       properties:
@@ -323,7 +412,6 @@ components:
           example: http://interactions.ics.unisg.ch/#me
     grabspot_body_1:
       required:
-      - callback
       - position
       type: object
       properties:
