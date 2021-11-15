@@ -118,7 +118,7 @@ paths:
           $ref: '#/components/schemas/Security'
       responses:
         "200":
-          description: Viewpoint read successfully.
+          description: Robot read successfully.
           content:
             application/json:
               schema:
@@ -143,7 +143,7 @@ paths:
           $ref: '#/components/schemas/Security'
       responses:
         "200":
-          description: Viewpoint read successfully.
+          description: Camera read successfully.
           content:
             application/json:
               schema:
@@ -520,6 +520,7 @@ components:
       enum:
       - "0"
       - "1"
+      - home
       - engraver1
       - engraver2
     inline_response_200:
