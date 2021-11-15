@@ -20,6 +20,8 @@ tags:
   description: The camera related to the robot controller.
 - name: viewpoint
   description: The set viewpoint of the robot.
+- name: spot
+  description: The position to which the robot is set to move.
 - name: grabspot
   description: The position at which the robot is set to grab.
 - name: releasespot
@@ -217,6 +219,79 @@ paths:
                   description: Acknowledged.
                 "400":
                   description: Invalid input parameter.
+  /spot:
+    get:
+      tags:
+      - spot
+      summary: Reads the spot.
+      description: Reads the target or current spot of the robot.
+      parameters:
+      - name: X-API-KEY
+        in: header
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/Security'
+      responses:
+        "200":
+          description: Spot read successfully.
+          content:
+            application/json+euclidean:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+            application/json+neighborhood:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_1'
+        "400":
+          description: Bad input parameter.
+        "401":
+          description: Unauthorized.
+    put:
+      tags:
+      - spot
+      summary: Sets the spot.
+      description: Sets the target spot of the robot.
+      parameters:
+      - name: X-API-KEY
+        in: header
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/Security'
+      requestBody:
+        description: The target position.
+        content:
+          application/json+euclidean:
+            schema:
+              $ref: '#/components/schemas/spot_body'
+          application/json+neighborhood:
+            schema:
+              $ref: '#/components/schemas/spot_body_1'
+        required: true
+      responses:
+        "202":
+          description: The neighbor/coordinates have been accepted.
+        "400":
+          description: Invalid input parameter.
+        "401":
+          description: Unauthorized.
+      callbacks:
+        done:
+          '{$request.body#/callback}':
+            post:
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/Done'
+                required: true
+              responses:
+                "200":
+                  description: Acknowledged.
+                "400":
+                  description: Invalid input parameter.
   /grabspot:
     get:
       tags:
@@ -248,8 +323,8 @@ paths:
     put:
       tags:
       - grabspot
-      summary: Sets the graspbot.
-      description: Sets the target graspbot of the robot.
+      summary: Sets the grabsbot.
+      description: Sets the target grabspot of the robot.
       parameters:
       - name: X-API-KEY
         in: header
@@ -461,6 +536,26 @@ components:
       properties:
         position:
           $ref: '#/components/schemas/Neighbor'
+    spot_body:
+      required:
+      - position
+      type: object
+      properties:
+        position:
+          $ref: '#/components/schemas/Coordinates'
+        callback:
+          type: string
+          example: http://interactions.ics.unisg.ch/#me
+    spot_body_1:
+      required:
+      - position
+      type: object
+      properties:
+        position:
+          $ref: '#/components/schemas/Neighbor'
+        callback:
+          type: string
+          example: http://interactions.ics.unisg.ch/#me
     grabspot_body:
       required:
       - position
