@@ -142,7 +142,7 @@ paths:
               $ref: '#/components/schemas/Viewpoint'
         required: true
       responses:
-        "200":
+        "202":
           description: The position has been accepted.
         "400":
           description: Invalid input parameter.
@@ -215,7 +215,7 @@ paths:
               $ref: '#/components/schemas/grabspot_body_1'
         required: true
       responses:
-        "200":
+        "202":
           description: The neighbor/coordinates have been accepted.
         "400":
           description: Invalid input parameter.
@@ -288,7 +288,7 @@ paths:
               $ref: '#/components/schemas/releasespot_body_1'
         required: true
       responses:
-        "200":
+        "202":
           description: The neighbor/coordinates have been accepted.
         "400":
           description: Invalid input parameter.
