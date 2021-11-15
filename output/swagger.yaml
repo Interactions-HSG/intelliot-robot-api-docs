@@ -14,6 +14,10 @@ servers:
 tags:
 - name: operator
   description: The operator of the robot controller.
+- name: robot
+  description: The description related to the robot controller.
+- name: camera
+  description: The camera related to the robot controller.
 - name: viewpoint
   description: The set viewpoint of the robot.
 - name: grabspot
@@ -94,6 +98,56 @@ paths:
           description: Operator successfully removed.
         "400":
           description: Invalid token; no operator is set with the specified token.
+        "401":
+          description: Unauthorized.
+  /robot:
+    get:
+      tags:
+      - robot
+      summary: Reads the robot handle.
+      description: Reads the handle of the robot that is related to the robot controller.
+      parameters:
+      - name: X-API-KEY
+        in: header
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/Security'
+      responses:
+        "200":
+          description: Viewpoint read successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Handle'
+        "400":
+          description: Bad input parameter.
+        "401":
+          description: Unauthorized.
+  /camera:
+    get:
+      tags:
+      - camera
+      summary: Reads the camera handle.
+      description: Reads the handle of the camera that is related to the robot controller.
+      parameters:
+      - name: X-API-KEY
+        in: header
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/Security'
+      responses:
+        "200":
+          description: Viewpoint read successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Handle'
+        "400":
+          description: Bad input parameter.
         "401":
           description: Unauthorized.
   /viewpoint:
@@ -328,6 +382,15 @@ components:
       example:
         name: Danai Vachtsevanou
         email: danai.vachtsevanou@unisg.ch
+    Handle:
+      required:
+      - handle
+      type: object
+      properties:
+        handle:
+          type: string
+      example:
+        handle: https://virtserver.swaggerhub.com/danaivach/robot-controller/1.0.0
     Done:
       type: object
       properties:
