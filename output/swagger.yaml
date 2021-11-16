@@ -7,30 +7,28 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.0.0
+  version: 1.0.1
 servers:
-- url: https://virtserver.swaggerhub.com/danaivach/robot-controller/1.0.0
+- url: https://virtserver.swaggerhub.com/danaivach/robot-controller/1.0.1
   description: SwaggerHub API Auto Mocking
 tags:
-- name: operator
+- name: Operator
   description: The operator of the robot controller.
-- name: robot
+- name: Robot
   description: The description related to the robot controller.
-- name: camera
+- name: Camera
   description: The camera related to the robot controller.
-- name: viewpoint
+- name: Viewpoint
   description: The set viewpoint of the robot.
-- name: spot
-  description: The position to which the robot is set to move.
-- name: grabspot
-  description: The position at which the robot is set to grab.
-- name: releasespot
-  description: The position at which the robot is set to release.
+- name: ToolCenterPoint
+  description: The tool center point of the robot.
+- name: Clamp
+  description: The clamp of the robot.
 paths:
   /operator:
     get:
       tags:
-      - operator
+      - Operator
       summary: Reads the operator.
       description: Reads the name and email of the operator of the robot controller.
       responses:
@@ -40,11 +38,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Operator'
-        "400":
-          description: Bad input parameter.
     post:
       tags:
-      - operator
+      - Operator
       summary: Sets an operator.
       description: "Sets a new operator with a name and email address. Upon successful\
         \ registration, the response's header contains a \"Location\" tag with an\
@@ -62,20 +58,20 @@ paths:
           description: Operator set successfully.
           headers:
             Location:
-              description: "The location of the current operator, e.g. virtserver.swaggerhub.com/danaivach/robot/0.0.0/operator/6dc1e80c14edf749e2ceb86d98ea1ca1."
+              description: "The location of the current operator, e.g. virtserver.swaggerhub.com/danaivach/robot/1.0.1/operator/6dc1e80c14edf749e2ceb86d98ea1ca1."
               style: simple
               explode: false
               schema:
                 type: string
-              example: virtserver.swaggerhub.com/danaivach/robot/0.0.0/operator/6dc1e80c14edf749e2ceb86d98ea1ca1
+              example: virtserver.swaggerhub.com/danaivach/robot/1.0.1/operator/6dc1e80c14edf749e2ceb86d98ea1ca1
         "400":
-          description: Bad input parameter.
+          description: Invalid input parameter.
         "403":
           description: An operator is already set.
   /operator/{token}:
     delete:
       tags:
-      - operator
+      - Operator
       summary: Removes the operator.
       description: Removes the operator specified by the token.
       parameters:
@@ -105,7 +101,7 @@ paths:
   /robot:
     get:
       tags:
-      - robot
+      - Robot
       summary: Reads the robot handle.
       description: Reads the handle of the robot that is related to the robot controller.
       parameters:
@@ -124,13 +120,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Handle'
         "400":
-          description: Bad input parameter.
+          description: Invalid input parameter.
         "401":
           description: Unauthorized.
   /camera:
     get:
       tags:
-      - camera
+      - Camera
       summary: Reads the camera handle.
       description: Reads the handle of the camera that is related to the robot controller.
       parameters:
@@ -148,14 +144,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Handle'
-        "400":
-          description: Bad input parameter.
         "401":
           description: Unauthorized.
   /viewpoint:
     get:
       tags:
-      - viewpoint
+      - Viewpoint
       summary: Reads the viewpoint.
       description: Reads the target or current viewpoint of the robot.
       parameters:
@@ -173,13 +167,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Viewpoint'
-        "400":
-          description: Bad input parameter.
         "401":
           description: Unauthorized.
     put:
       tags:
-      - viewpoint
+      - Viewpoint
       summary: Sets the viewpoint.
       description: Sets the target viewpoint of the robot.
       parameters:
@@ -219,12 +211,12 @@ paths:
                   description: Acknowledged.
                 "400":
                   description: Invalid input parameter.
-  /spot:
+  /toolcenterpoint:
     get:
       tags:
-      - spot
-      summary: Reads the spot.
-      description: Reads the target or current spot of the robot.
+      - ToolCenterPoint
+      summary: Reads the tool center point.
+      description: Reads the target or current position of the robot tool center point.
       parameters:
       - name: X-API-KEY
         in: header
@@ -235,23 +227,21 @@ paths:
           $ref: '#/components/schemas/Security'
       responses:
         "200":
-          description: Spot read successfully.
+          description: Tool center point read successfully.
           content:
-            application/json+euclidean:
+            application/physical+json:
               schema:
                 $ref: '#/components/schemas/inline_response_200'
-            application/json+neighborhood:
+            application/logical+json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_1'
-        "400":
-          description: Bad input parameter.
         "401":
           description: Unauthorized.
     put:
       tags:
-      - spot
-      summary: Sets the spot.
-      description: Sets the target spot of the robot.
+      - ToolCenterPoint
+      summary: Sets the tool center point.
+      description: Sets the target position of the robot tool center point.
       parameters:
       - name: X-API-KEY
         in: header
@@ -261,18 +251,20 @@ paths:
         schema:
           $ref: '#/components/schemas/Security'
       requestBody:
-        description: The target position.
+        description: The target physical or logical position and the callback location.
+          The robot controller uses the callback location to send notifications about
+          the progress of the request.
         content:
-          application/json+euclidean:
+          application/physical+json:
             schema:
-              $ref: '#/components/schemas/spot_body'
-          application/json+neighborhood:
+              $ref: '#/components/schemas/toolcenterpoint_body'
+          application/logical+json:
             schema:
-              $ref: '#/components/schemas/spot_body_1'
+              $ref: '#/components/schemas/toolcenterpoint_body_1'
         required: true
       responses:
         "202":
-          description: The neighbor/coordinates have been accepted.
+          description: The physical/logical position has been accepted.
         "400":
           description: Invalid input parameter.
         "401":
@@ -292,12 +284,12 @@ paths:
                   description: Acknowledged.
                 "400":
                   description: Invalid input parameter.
-  /grabspot:
+  /clamp:
     get:
       tags:
-      - grabspot
-      summary: Reads the grabspot.
-      description: Reads the target or current grabspot of the robot.
+      - Clamp
+      summary: Reads the clamp.
+      description: Reads the status of the robot clamp.
       parameters:
       - name: X-API-KEY
         in: header
@@ -308,23 +300,18 @@ paths:
           $ref: '#/components/schemas/Security'
       responses:
         "200":
-          description: Grabspot read successfully.
+          description: Clamp read successfully.
           content:
-            application/json+euclidean:
+            application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_200'
-            application/json+neighborhood:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_1'
-        "400":
-          description: Bad input parameter.
+                $ref: '#/components/schemas/Clamp'
         "401":
           description: Unauthorized.
     put:
       tags:
-      - grabspot
-      summary: Sets the grabsbot.
-      description: Sets the target grabspot of the robot.
+      - Clamp
+      summary: Sets the clamp.
+      description: Sets the status of the robot clamp.
       parameters:
       - name: X-API-KEY
         in: header
@@ -334,110 +321,19 @@ paths:
         schema:
           $ref: '#/components/schemas/Security'
       requestBody:
-        description: The target position.
+        description: The target clamp status.
         content:
-          application/json+euclidean:
+          application/json:
             schema:
-              $ref: '#/components/schemas/grabspot_body'
-          application/json+neighborhood:
-            schema:
-              $ref: '#/components/schemas/grabspot_body_1'
+              $ref: '#/components/schemas/Clamp'
         required: true
-      responses:
-        "202":
-          description: The neighbor/coordinates have been accepted.
-        "400":
-          description: Invalid input parameter.
-        "401":
-          description: Unauthorized.
-      callbacks:
-        done:
-          '{$request.body#/callback}':
-            post:
-              requestBody:
-                content:
-                  application/json:
-                    schema:
-                      $ref: '#/components/schemas/Done'
-                required: true
-              responses:
-                "200":
-                  description: Acknowledged.
-                "400":
-                  description: Invalid input parameter.
-  /releasespot:
-    get:
-      tags:
-      - releasespot
-      summary: Reads the release-spot.
-      description: Reads the target or current release-spot of the robot.
-      parameters:
-      - name: X-API-KEY
-        in: header
-        required: true
-        style: simple
-        explode: false
-        schema:
-          $ref: '#/components/schemas/Security'
       responses:
         "200":
-          description: Release-spot read successfully.
-          content:
-            application/json+euclidean:
-              schema:
-                $ref: '#/components/schemas/inline_response_200'
-            application/json+neighborhood:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_1'
-        "400":
-          description: Bad input parameter.
-        "401":
-          description: Unauthorized.
-    put:
-      tags:
-      - releasespot
-      summary: Sets the release-spot.
-      description: Sets the target release-spot of the robot.
-      parameters:
-      - name: X-API-KEY
-        in: header
-        required: true
-        style: simple
-        explode: false
-        schema:
-          $ref: '#/components/schemas/Security'
-      requestBody:
-        description: The target position.
-        content:
-          application/json+euclidean:
-            schema:
-              $ref: '#/components/schemas/releasespot_body'
-          application/json+neighborhood:
-            schema:
-              $ref: '#/components/schemas/releasespot_body_1'
-        required: true
-      responses:
-        "202":
-          description: The neighbor/coordinates have been accepted.
+          description: Clamp status set successfully.
         "400":
           description: Invalid input parameter.
         "401":
           description: Unauthorized.
-      callbacks:
-        done:
-          '{$request.body#/callback}':
-            post:
-              requestBody:
-                content:
-                  application/json:
-                    schema:
-                      $ref: '#/components/schemas/Done'
-                required: true
-              responses:
-                "200":
-                  description: Acknowledged.
-                "400":
-                  description: Invalid input parameter.
 components:
   schemas:
     Security:
@@ -476,7 +372,6 @@ components:
           example: Completed
           enum:
           - Completed
-          - In progress
           - Aborted
     Viewpoint:
       required:
@@ -498,7 +393,7 @@ components:
           description: The callback location passed to the robot controller. The robot
             controller will
           example: http://interactions.ics.unisg.ch/#me
-    Coordinates:
+    PhysicalPosition:
       required:
       - x
       - "y"
@@ -514,88 +409,53 @@ components:
         z:
           type: number
           example: 0
-    Neighbor:
+    LogicalPosition:
       type: string
-      example: engraver1
+      example: home
       enum:
-      - "0"
-      - "1"
       - home
       - engraver1
       - engraver2
+    Clamp:
+      type: object
+      properties:
+        status:
+          type: string
+          example: open
+          enum:
+          - open
+          - close
     inline_response_200:
       required:
       - position
       type: object
       properties:
         position:
-          $ref: '#/components/schemas/Coordinates'
+          $ref: '#/components/schemas/PhysicalPosition'
     inline_response_200_1:
       required:
       - position
       type: object
       properties:
         position:
-          $ref: '#/components/schemas/Neighbor'
-    spot_body:
+          $ref: '#/components/schemas/LogicalPosition'
+    toolcenterpoint_body:
       required:
       - position
       type: object
       properties:
         position:
-          $ref: '#/components/schemas/Coordinates'
+          $ref: '#/components/schemas/PhysicalPosition'
         callback:
           type: string
           example: http://interactions.ics.unisg.ch/#me
-    spot_body_1:
+    toolcenterpoint_body_1:
       required:
       - position
       type: object
       properties:
         position:
-          $ref: '#/components/schemas/Neighbor'
-        callback:
-          type: string
-          example: http://interactions.ics.unisg.ch/#me
-    grabspot_body:
-      required:
-      - position
-      type: object
-      properties:
-        position:
-          $ref: '#/components/schemas/Coordinates'
-        callback:
-          type: string
-          example: http://interactions.ics.unisg.ch/#me
-    grabspot_body_1:
-      required:
-      - position
-      type: object
-      properties:
-        position:
-          $ref: '#/components/schemas/Neighbor'
-        callback:
-          type: string
-          example: http://interactions.ics.unisg.ch/#me
-    releasespot_body:
-      required:
-      - callback
-      - position
-      type: object
-      properties:
-        position:
-          $ref: '#/components/schemas/Coordinates'
-        callback:
-          type: string
-          example: http://interactions.ics.unisg.ch/#me
-    releasespot_body_1:
-      required:
-      - callback
-      - position
-      type: object
-      properties:
-        position:
-          $ref: '#/components/schemas/Neighbor'
+          $ref: '#/components/schemas/LogicalPosition'
         callback:
           type: string
           example: http://interactions.ics.unisg.ch/#me
