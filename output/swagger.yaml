@@ -54,12 +54,12 @@ paths:
           description: Operator set successfully.
           headers:
             Location:
-              description: "The location of the current operator, e.g. virtserver.swaggerhub.com/danaivach/robot/1.0.1/operator/6dc1e80c14edf749e2ceb86d98ea1ca1."
+              description: "The location of the current operator, e.g. virtserver.swaggerhub.com/danaivach/robot/1.0.2/operator/6dc1e80c14edf749e2ceb86d98ea1ca1."
               style: simple
               explode: false
               schema:
                 type: string
-              example: virtserver.swaggerhub.com/danaivach/robot/1.0.1/operator/6dc1e80c14edf749e2ceb86d98ea1ca1
+              example: virtserver.swaggerhub.com/danaivach/robot/1.0.2/operator/6dc1e80c14edf749e2ceb86d98ea1ca1
         "400":
           description: Invalid input parameter.
         "403":
@@ -287,8 +287,8 @@ components:
         camera:
           type: string
       example:
-        robot: https://virtserver.swaggerhub.com/danaivach/robot-controller/1.0.1
-        camera: http://intelliot.camera.com/1.0.0
+        robot: https://virtserver.swaggerhub.com/danaivach/robot-controller/1.0.2
+        camera: http://camera.intelliot.com/1.0.0
     Done:
       type: object
       properties:
