@@ -50,8 +50,8 @@ paths:
               $ref: '#/components/schemas/OperatorProfile'
         required: true
       responses:
-        "200":
-          description: Operator set successfully.
+        "201":
+          description: Operator created successfully.
           headers:
             Location:
               description: "The location of the current operator, e.g. virtserver.swaggerhub.com/danaivach/robot/1.0.2/operator/6dc1e80c14edf749e2ceb86d98ea1ca1."
@@ -80,20 +80,11 @@ paths:
         schema:
           type: string
         example: 6dc1e80c14edf749e2ceb86d98ea1ca1
-      - name: X-API-KEY
-        in: header
-        required: true
-        style: simple
-        explode: false
-        schema:
-          $ref: '#/components/schemas/Security'
       responses:
-        "200":
+        "204":
           description: Operator successfully removed.
         "400":
           description: Invalid token; no operator is set with the specified token.
-        "401":
-          description: Unauthorized.
   /handle:
     get:
       tags:
