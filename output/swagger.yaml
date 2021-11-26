@@ -16,6 +16,8 @@ tags:
   description: The operator of the robot controller.
 - name: Handle
   description: The handles related to the robot controller.
+- name: Status
+  description: The status of the robot.
 - name: Pose
   description: The pose of the robot.
 - name: Gripper
@@ -92,14 +94,6 @@ paths:
       summary: Reads the robot and camera handles.
       description: Reads the handles of the robot and the camera that are related
         to the robot controller.
-      parameters:
-      - name: X-API-KEY
-        in: header
-        required: true
-        style: simple
-        explode: false
-        schema:
-          $ref: '#/components/schemas/Security'
       responses:
         "200":
           description: Handles read successfully.
@@ -107,24 +101,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Handle'
-        "400":
-          description: Invalid input parameter.
-        "401":
-          description: Unauthorized.
+  /status:
+    get:
+      tags:
+      - Status
+      summary: Reads the robot status.
+      description: Reads the movement status of the robot related to the robot controller.
+      responses:
+        "200":
+          description: Status read successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Status'
   /pose:
     get:
       tags:
       - Pose
       summary: Reads the pose.
       description: Reads the target or current pose of the robot.
-      parameters:
-      - name: X-API-KEY
-        in: header
-        required: true
-        style: simple
-        explode: false
-        schema:
-          $ref: '#/components/schemas/Security'
       responses:
         "200":
           description: Pose read successfully.
@@ -135,14 +130,12 @@ paths:
             application/tcp+json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_1'
-            application/logical+json:
+            application/namedpose+json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_2'
             application/ai+json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_3'
-        "401":
-          description: Unauthorized.
     put:
       tags:
       - Pose
@@ -159,7 +152,7 @@ paths:
       requestBody:
         description: "The target physical or logical position and the callback location.\
           \ The pose can be specified in different content types, i.e. application/joint+json,\
-          \ application/tcp+json, application/logical+json, and application/ai+json.\
+          \ application/tcp+json, application/namedpose+json, and application/ai+json.\
           \ The robot controller uses the callback location to send notifications\
           \ about the progress of the request."
         content:
@@ -169,7 +162,7 @@ paths:
           application/tcp+json:
             schema:
               $ref: '#/components/schemas/pose_body_1'
-          application/logical+json:
+          application/namedpose+json:
             schema:
               $ref: '#/components/schemas/pose_body_2'
           application/ai+json:
@@ -204,14 +197,6 @@ paths:
       - Gripper
       summary: Reads the gripper.
       description: Reads the status of the robot gripper.
-      parameters:
-      - name: X-API-KEY
-        in: header
-        required: true
-        style: simple
-        explode: false
-        schema:
-          $ref: '#/components/schemas/Security'
       responses:
         "200":
           description: Gripper read successfully.
@@ -219,8 +204,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Gripper'
-        "401":
-          description: Unauthorized.
     put:
       tags:
       - Gripper
@@ -280,6 +263,15 @@ components:
       example:
         robot: https://virtserver.swaggerhub.com/danaivach/robot-controller/1.0.2
         camera: http://camera.intelliot.com/1.0.0
+    Status:
+      required:
+      - inMovement
+      type: object
+      properties:
+        inMovement:
+          type: boolean
+      example:
+        inMovement: false
     Done:
       type: object
       properties:
@@ -350,13 +342,17 @@ components:
         alpha: 0
         beta: 0
         gamma: 0
-    LogicalPosition:
+    NamedPose:
       type: string
       example: milling_machine_viewpoint
       enum:
       - home
-      - milling_machine_viewpoint
       - storage_viewpoint
+      - milling_machine_viewpoint
+      - milling_machine_load
+      - engraver_viewpoint
+      - engraver_load
+      - dump_workpiece
     AICoordinates:
       required:
       - alpha
@@ -373,7 +369,7 @@ components:
       example:
         x: 0
         "y": 0
-        z: 0
+        alpha: 0
     Gripper:
       type: object
       properties:
@@ -404,7 +400,7 @@ components:
       type: object
       properties:
         value:
-          $ref: '#/components/schemas/LogicalPosition'
+          $ref: '#/components/schemas/NamedPose'
     inline_response_200_3:
       required:
       - value
@@ -438,7 +434,7 @@ components:
       type: object
       properties:
         value:
-          $ref: '#/components/schemas/LogicalPosition'
+          $ref: '#/components/schemas/NamedPose'
         callback:
           type: string
           example: http://interactions.ics.unisg.ch/#me
