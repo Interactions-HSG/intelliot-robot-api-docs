@@ -7,9 +7,9 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.0.2
+  version: 1.1.0
 servers:
-- url: https://virtserver.swaggerhub.com/danaivach/robot-controller/1.0.2
+- url: https://localhost:1880/robot-controller
   description: SwaggerHub API Auto Mocking
 tags:
 - name: Operator
@@ -36,14 +36,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/OperatorProfile'
+        "404":
+          description: Operator not found / no operator logged in.
     post:
       tags:
       - Operator
       summary: Sets an operator.
       description: "Sets a new operator with a name and email address. Upon successful\
-        \ registration, the response's header contains a \"Location\" tag with an\
-        \ API key at the end. The API key can be used to gain access to the API of\
-        \ the robot controller."
+        \ registration, the response's header contains an API key. The API key can\
+        \ be used to gain access to the API of the robot controller."
       requestBody:
         description: Operator to be registered.
         content:
@@ -55,33 +56,25 @@ paths:
         "201":
           description: Operator created successfully.
           headers:
-            Location:
-              description: "The location of the current operator, e.g. virtserver.swaggerhub.com/danaivach/robot/1.0.2/operator/6dc1e80c14edf749e2ceb86d98ea1ca1."
-              style: simple
-              explode: false
-              schema:
-                type: string
-              example: virtserver.swaggerhub.com/danaivach/robot/1.0.2/operator/6dc1e80c14edf749e2ceb86d98ea1ca1
+            X-API-Key:
+              $ref: '#/components/schemas/Security'
         "400":
           description: Invalid input parameter.
         "403":
           description: An operator is already set.
-  /operator/{token}:
     delete:
       tags:
       - Operator
       summary: Removes the operator.
       description: Removes the operator specified by the token.
       parameters:
-      - name: token
-        in: path
-        description: The operator token.
+      - name: X-API-KEY
+        in: header
         required: true
         style: simple
         explode: false
         schema:
-          type: string
-        example: 6dc1e80c14edf749e2ceb86d98ea1ca1
+          $ref: '#/components/schemas/Security'
       responses:
         "204":
           description: Operator successfully removed.
@@ -136,6 +129,8 @@ paths:
             application/ai+json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_3'
+        "406":
+          description: Not acceptable
     put:
       tags:
       - Pose
@@ -225,8 +220,8 @@ paths:
               $ref: '#/components/schemas/Gripper'
         required: true
       responses:
-        "200":
-          description: Gripper status set successfully.
+        "202":
+          description: Gripper status request accepted.
         "400":
           description: Invalid input parameter.
         "401":
@@ -236,7 +231,7 @@ components:
     Security:
       type: string
       description: The operator token.
-      example: 6dc1e80c14edf749e2ceb86d98ea1ca1
+      example: 52fb52f9-40e5-44f0-8a17-d3c1bb810dc2
     OperatorProfile:
       required:
       - email
@@ -344,13 +339,10 @@ components:
         gamma: 0
     NamedPose:
       type: string
-      example: milling_machine_viewpoint
+      example: milling_machine_load
       enum:
       - home
-      - storage_viewpoint
-      - milling_machine_viewpoint
       - milling_machine_load
-      - engraver_viewpoint
       - engraver_load
       - dump_workpiece
     AICoordinates:
